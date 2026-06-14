@@ -300,13 +300,10 @@ export function AgentWorkbench({ initialAgent, initialRuns }: { initialAgent: Ag
       </section>
 
       <section className="rounded-xl border border-forge-border bg-forge-card p-5">
-        <SectionTitle step="5" title="Export / Deploy Agent" copy="Download run history as CSV or generate a deployment key for API usage." />
+        <SectionTitle step="5" title="Deploy Agent" copy="Generate a deployment key for API usage. Keep this key private." />
         <div className="mt-5 rounded-xl border border-forge-orange/30 bg-forge-orange/10 p-4 text-sm leading-6 text-orange-100">
           Deployment keys can run your agent through supported server routes. Treat them like passwords and regenerate the key if it is exposed.
         </div>
-        <button onClick={downloadCsv} disabled={busy === 'export'} className="mt-4 rounded-xl bg-forge-blue px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-blue-500 disabled:opacity-60">
-          {busy === 'export' ? 'Preparing CSV...' : 'Download CSV'}
-        </button>
         <div className="mt-4 flex flex-col gap-3 md:flex-row">
           <input readOnly value={deploymentKey || 'No deployment key generated yet'} className="min-w-0 flex-1 rounded-xl border border-forge-border bg-black/30 px-4 py-3 font-mono text-sm text-forge-muted" />
           <button onClick={generateDeploymentKey} disabled={busy === 'deploy'} className="rounded-xl bg-forge-purple px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-purple-500 disabled:opacity-60">{busy === 'deploy' ? 'Generating...' : deploymentKey ? 'Regenerate Key' : 'Generate Key'}</button>
@@ -339,6 +336,13 @@ export function AgentWorkbench({ initialAgent, initialRuns }: { initialAgent: Ag
           </table>
           {runs.length === 0 ? <p className="rounded-xl border border-dashed border-forge-border p-6 text-center text-forge-muted">No runs yet. Run the demo task above to create the first result.</p> : null}
         </div>
+      </section>
+
+      <section className="rounded-xl border border-forge-border bg-forge-card p-5">
+        <SectionTitle step="7" title="Download Report" copy="Export your run history and evaluation scores as a CSV file." />
+        <button onClick={downloadCsv} disabled={busy === 'export'} className="mt-5 rounded-xl bg-forge-blue px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-blue-500 disabled:opacity-60">
+          {busy === 'export' ? 'Preparing CSV...' : 'Download CSV'}
+        </button>
       </section>
     </div>
   )

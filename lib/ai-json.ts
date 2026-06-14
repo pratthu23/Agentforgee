@@ -41,7 +41,7 @@ async function requestOnce(system: string, user: string): Promise<string> {
         { role: 'system', content: system },
         { role: 'user', content: user }
       ],
-      temperature: 0.2
+      temperature: 0
     })
   })
 

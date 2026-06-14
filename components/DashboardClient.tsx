@@ -76,17 +76,19 @@ export function DashboardClient() {
       {error ? <div className="mb-6"><LoadStatePanel title="Failed to load saved agents" message={error} onRetry={() => void loadAgents()} /></div> : null}
       {agents.length > 0 ? (
         <>
-          <div className="mb-4 flex justify-end">
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {agents.map((agent) => <AgentCard key={agent.id} agent={agent} />)}
+          </section>
+          <section className="mt-6 rounded-xl border border-forge-border bg-forge-card p-5">
+            <h2 className="text-xl font-bold text-white">Download Report</h2>
+            <p className="mt-2 text-sm text-forge-muted">Export all accessible runs and evaluation scores as a CSV file.</p>
             <button
               onClick={handleDownloadCsv}
               disabled={exporting}
-              className="rounded-xl border border-forge-border px-4 py-3 text-sm font-semibold text-forge-text transition-all duration-200 hover:bg-white/5 disabled:opacity-60"
+              className="mt-5 rounded-xl bg-forge-blue px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-500 disabled:opacity-60"
             >
               {exporting ? 'Preparing CSV...' : 'Download CSV'}
             </button>
-          </div>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {agents.map((agent) => <AgentCard key={agent.id} agent={agent} />)}
           </section>
         </>
       ) : (
