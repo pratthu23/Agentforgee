@@ -38,13 +38,13 @@ type Sort = { field: string; ascending: boolean }
 let cachedFirestore: Firestore | null = null
 
 export function getMissingFirebaseAdminEnv(): string[] {
-  return [
+  const requiredEnv: Array<[string, string | undefined]> = [
     ['FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID],
     ['FIREBASE_CLIENT_EMAIL', process.env.FIREBASE_CLIENT_EMAIL],
     ['FIREBASE_PRIVATE_KEY', normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY)]
   ]
-    .filter(([, value]) => !value)
-    .map(([name]) => name)
+
+  return requiredEnv.filter(([, value]) => !value).map(([name]) => name)
 }
 
 export async function getFirebaseAdminDb(): Promise<Firestore | null> {
