@@ -37,6 +37,16 @@ type Sort = { field: string; ascending: boolean }
 
 let cachedFirestore: Firestore | null = null
 
+export function getMissingFirebaseAdminEnv(): string[] {
+  return [
+    ['FIREBASE_PROJECT_ID', process.env.FIREBASE_PROJECT_ID],
+    ['FIREBASE_CLIENT_EMAIL', process.env.FIREBASE_CLIENT_EMAIL],
+    ['FIREBASE_PRIVATE_KEY', normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY)]
+  ]
+    .filter(([, value]) => !value)
+    .map(([name]) => name)
+}
+
 export async function getFirebaseAdminDb(): Promise<Firestore | null> {
   const projectId = process.env.FIREBASE_PROJECT_ID
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
@@ -73,7 +83,12 @@ export async function requireFirebaseStore(): Promise<FirebaseStore> {
   const store = await getFirebaseStore()
 
   if (!store) {
-    throw new Error('Firebase is not configured.')
+    const missing = getMissingFirebaseAdminEnv()
+    throw new Error(
+      missing.length
+        ? `Firebase is not configured. Missing Vercel env: ${missing.join(', ')}.`
+        : 'Firebase is not configured.'
+    )
   }
 
   return store
