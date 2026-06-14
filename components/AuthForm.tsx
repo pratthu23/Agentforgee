@@ -3,7 +3,7 @@
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { getFirebaseBrowserAuth } from '@/lib/firebase-client'
+import { getFirebaseBrowserAuth, getFirebaseBrowserConfigError } from '@/lib/firebase-client'
 
 export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   const router = useRouter()
@@ -23,7 +23,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     const auth = getFirebaseBrowserAuth()
 
     if (!auth) {
-      setError('Firebase is not configured.')
+      setError(getFirebaseBrowserConfigError())
       setLoading(false)
       return
     }
@@ -53,7 +53,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     const auth = getFirebaseBrowserAuth()
 
     if (!auth) {
-      setError('Firebase is not configured.')
+      setError(getFirebaseBrowserConfigError())
       setGoogleLoading(false)
       return
     }

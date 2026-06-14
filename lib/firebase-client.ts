@@ -20,6 +20,24 @@ export function getFirebaseBrowserApp(): FirebaseApp | null {
   return getApps().length ? getApp() : initializeApp(config)
 }
 
+export function getMissingFirebaseBrowserEnv(): string[] {
+  const requiredEnv: Array<[string, string | undefined]> = [
+    ['NEXT_PUBLIC_FIREBASE_API_KEY', process.env.NEXT_PUBLIC_FIREBASE_API_KEY],
+    ['NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN],
+    ['NEXT_PUBLIC_FIREBASE_PROJECT_ID', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID],
+    ['NEXT_PUBLIC_FIREBASE_APP_ID', process.env.NEXT_PUBLIC_FIREBASE_APP_ID]
+  ]
+
+  return requiredEnv.filter(([, value]) => !value).map(([name]) => name)
+}
+
+export function getFirebaseBrowserConfigError(): string {
+  const missing = getMissingFirebaseBrowserEnv()
+  return missing.length
+    ? `Firebase is not configured. Missing Vercel env: ${missing.join(', ')}.`
+    : 'Firebase is not configured.'
+}
+
 export function getFirebaseBrowserAuth(): Auth | null {
   const app = getFirebaseBrowserApp()
   return app ? getAuth(app) : null
