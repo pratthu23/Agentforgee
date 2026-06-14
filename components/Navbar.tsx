@@ -1,6 +1,7 @@
 'use client'
 
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -38,7 +39,9 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-forge-border bg-forge-bg/90 backdrop-blur">
       <nav className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-4 sm:flex-row sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight transition-all duration-200 hover:text-white">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-forge-purple/20 text-base">AF</span>
+          <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-xl border border-forge-border bg-[#fff7eb]">
+            <Image src="/agentforge-logo.png" alt="" width={36} height={36} className="h-full w-full object-cover" priority />
+          </span>
           AgentForge
         </Link>
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-forge-muted">
