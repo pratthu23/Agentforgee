@@ -1,7 +1,6 @@
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
-import { buildAgentSystemPrompt } from '@/lib/agent-context'
 import { getAuthenticatedUser, requireFirebaseStore } from '@/lib/auth'
 import { runLocalAgent } from '@/lib/free-ai'
 import { generateWithProvider } from '@/lib/model-providers'
@@ -41,16 +40,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: agentError ?? 'Agent not found.' }, { status: agentError?.includes('permission') ? 403 : 404 })
     }
 
-    const [knowledgeResult, toolsResult] = await Promise.all([
-      store.from('knowledge_sources').select('*').eq('agent_id', agent.id).eq('user_id', agent.user_id),
-      store.from('tool_integrations').select('*').eq('agent_id', agent.id).eq('user_id', agent.user_id)
-    ])
-    const system = buildAgentSystemPrompt({ agent, knowledge: knowledgeResult.data ?? [], tools: toolsResult.data ?? [] })
-
     // Run the selected provider as the domain-specific agent.
     const modelResult = await generateWithProvider({
       providerId: body.modelProvider,
-      system,
+      system: agent.system_prompt,
       prompt: body.task.trim(),
       localOutput: () => runLocalAgent(agent, body.task?.trim() ?? '')
     })

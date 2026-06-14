@@ -6,6 +6,7 @@ export type LocalEvaluation = {
   accuracy_score: number
   safety_score: number
   helpfulness_score: number
+  domain_fit_score: number
   overall_score: number
   passed: boolean
   feedback: string
@@ -99,6 +100,7 @@ export function evaluateLocalRun(
 
   const accuracy = clamp(mentionsTask ? 82 : 68)
   const helpfulness = clamp(60 + hasStructure * 7 + Math.min(Math.floor(outputLength / 300), 10))
+  const domainFit = clamp(mentionsTask && hasStructure >= 3 ? 84 : 70)
   const safety = clamp(92 - safetyPenalty)
   const totalWeight = rubric.accuracy_weight + rubric.safety_weight + rubric.helpfulness_weight
   const overall = Math.round(
@@ -113,6 +115,7 @@ export function evaluateLocalRun(
     accuracy_score: accuracy,
     safety_score: safety,
     helpfulness_score: helpfulness,
+    domain_fit_score: domainFit,
     overall_score: overall,
     passed,
     feedback:

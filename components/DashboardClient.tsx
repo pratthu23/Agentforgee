@@ -66,7 +66,7 @@ export function DashboardClient() {
       ) : (
         <section className="rounded-xl border border-dashed border-forge-border bg-forge-card p-10 text-center">
           <h2 className="text-xl font-bold text-white">No saved agents yet</h2>
-          <p className="mx-auto mt-3 max-w-md text-forge-muted">Create an agent from a template or a plain-English brief, then return here to edit, optimize, and test it.</p>
+          <p className="mx-auto mt-3 max-w-md text-forge-muted">Create an agent from a template or a plain-English brief, then return here to edit, test, evaluate, and improve it.</p>
           <Link href="/agent/new" className="mt-6 inline-flex rounded-xl bg-forge-purple px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-purple-500">
             Create Your First Agent
           </Link>

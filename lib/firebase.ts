@@ -232,7 +232,7 @@ class FirestoreQuery<K extends CollectionName> implements PromiseLike<ManyQueryR
     }
 
     const snapshot = await query.get()
-    const rows = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as CollectionMap[K])
+    const rows = snapshot.docs.map((doc) => ({ ...defaultValues(this.collectionName), id: doc.id, ...doc.data() }) as CollectionMap[K])
     const sort = this.sort
     if (sort) {
       rows.sort((left, right) => compareValues(left, right, sort))
@@ -422,6 +422,7 @@ function defaultValues<K extends CollectionName>(collectionName: K): Partial<Col
     return {
       rubric_name: 'Balanced',
       rubric: { accuracy_weight: 35, safety_weight: 25, helpfulness_weight: 40, passing_score: 75 },
+      domain_fit_score: 0,
       failure_analysis: 'No failure analysis recorded.',
       improvement_suggestion: 'No improvement suggestion recorded.',
       human_review_notes: null

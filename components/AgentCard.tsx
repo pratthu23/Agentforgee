@@ -27,6 +27,7 @@ export function AgentCard({ agent }: { agent: AgentWithStats }) {
           <span className="rounded-full bg-white/5 px-2.5 py-1 font-semibold text-forge-text">{agent.average_score}% avg</span>
         ) : null}
       </div>
+      <span className="mt-5 inline-flex rounded-lg border border-forge-border px-3 py-2 text-sm font-semibold text-forge-text">Open Agent</span>
     </Link>
   )
 }

@@ -1,37 +1,42 @@
 # AgentForge
 
-AgentForge is a focused workspace for building, editing, testing, and evaluating domain-specific AI agents. It helps you create an agent from a template or plain-English brief, refine the system prompt, run real test tasks, score the output, and save stronger prompt versions over time.
+AgentForge is a focused AI agent prompt workbench for creating domain agents, running real test tasks, evaluating responses, improving prompts, and exporting a deployment key.
 
-The current product scope is intentionally lean for prototype and hackathon use. It focuses on private saved agents, prompt quality, test runs, and evaluation instead of marketplace or public discovery features.
+Core workflow:
 
-## Current Scope
+```text
+Create Agent -> Agent Instructions -> Run Test -> Evaluate Response -> Improve Prompt -> Export / Deploy Agent
+```
 
-AgentForge includes:
+## Features
 
-- Firebase Authentication for sign up, sign in, and saved agents.
-- Saved Agents dashboard for opening and continuing agent work.
-- Agent templates for HR, legal, finance, customer support, coding, sales, and incident response.
-- Agent creation from templates or a plain-English description.
-- Full prompt editor for name, domain, description, tone, constraints, output format, and system prompt.
-- AgentForge Lens for prompt quality analysis, optimization, token estimates, ROI estimates, and version history.
-- Live prompt optimization from the current editor draft, even before saving.
-- Single-task agent runner.
-- Batch test-case runner and benchmark suites.
-- Evaluation scorecard with accuracy, safety, helpfulness, overall score, pass/fail, feedback, failure analysis, and improvement suggestions.
-- Cost and token estimate tracking for model runs.
-- Save, load, edit, and version agents using Cloud Firestore.
-- Optional knowledge snippets, tool descriptions, and conversation mode for deeper testing.
+- Firebase sign up, sign in, Google sign in, and saved agents.
+- Saved Agents page with simple agent cards.
+- Create Agent page with three polished templates:
+  - SaaS Customer Support Agent
+  - College Helpdesk Agent
+  - Local Business WhatsApp Support Agent
+- Agent Instructions editor for name, domain, description, tone, output format, constraints, and system prompt.
+- Run Test section with model selector, task textarea, readable response panel, token count, and cost estimate.
+- Evaluation section with overall, accuracy, safety, helpfulness, and domain fit scores.
+- Human-readable evaluation feedback, failure analysis, and suggested prompt improvement.
+- Improve Prompt section with preview, apply improvement, and before/after summary.
+- Export / Deploy Agent section with generated deployment API key and copy action.
+- Recent Runs table with task, score, pass/fail, and date.
+- Server-side Local, Gemini, and OpenAI model providers.
 
-Removed from this prototype:
+Removed from this focused version:
 
-- Marketplace page and clone-agent flow.
-- Leaderboard page.
-- Public/private publishing controls.
-- Public agent profile URLs.
-- Public deployment endpoint per agent.
-- Heavy dashboard analytics.
-- Fake marketplace or leaderboard sample data pretending to be live.
-- Groq provider paths.
+- Old prompt analysis suite.
+- Marketplace and clone-agent flow.
+- Leaderboard.
+- Public publishing/profile pages.
+- Complex version history.
+- Knowledge base panels.
+- Tool integration panels.
+- Conversation mode.
+- Batch testing.
+- Fake demo analytics or sample marketplace data.
 
 ## Tech Stack
 
@@ -41,71 +46,17 @@ Removed from this prototype:
 - Tailwind CSS
 - Firebase Authentication
 - Cloud Firestore
-- Firebase Admin SDK for server-side database access
-- Gemini API for free-tier model mode
-- OpenAI API for paid model mode
-- Local free mode for no-cost testing
-- Vercel-ready deployment
-
-## AI Modes
-
-AgentForge supports three practical modes.
-
-### Local Free Mode
-
-Use this for testing the full app flow without spending API credits.
-
-```env
-AI_PROVIDER=local
-```
-
-Local mode uses built-in deterministic logic for agent generation, runs, prompt analysis, prompt optimization, and evaluation. It is useful for demos, UI testing, and development, but it is not as intelligent as a real LLM.
-
-### OpenAI Mode
-
-Use this when you want real model output.
-
-```env
-AI_PROVIDER=openai
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4o-mini
-```
-
-Recommended prototype model:
-
-```env
-OPENAI_MODEL=gpt-4o-mini
-```
-
-Keep `OPENAI_API_KEY` server-only. Do not rename it to `NEXT_PUBLIC_OPENAI_API_KEY`, and do not put it in frontend code.
-
-### Gemini Free Mode
-
-Use this when you want a web-ready hosted model without spending OpenAI credits. Google currently offers free tiers for some Gemini Flash models in the Gemini API. The default model in this project is:
-
-```env
-GEMINI_MODEL=gemini-3.1-flash-lite
-```
-
-Configure:
-
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-3.1-flash-lite
-```
-
-Keep `GEMINI_API_KEY` server-only. Do not rename it to `NEXT_PUBLIC_GEMINI_API_KEY`, and do not put it in frontend code.
+- Firebase Admin SDK
+- Local free mode
+- Gemini API optional free-tier mode
+- OpenAI API optional paid mode
+- Vercel deployment
 
 ## Environment Variables
 
-Create `.env.local` from the example file:
+Create `.env.local` from `.env.local.example` for local development.
 
-```bash
-cp .env.local.example .env.local
-```
-
-Then fill in:
+Required Firebase browser config:
 
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=
@@ -114,66 +65,75 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
+```
 
+Required Firebase server config:
+
+```env
 FIREBASE_PROJECT_ID=
 FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY=
+```
 
+AI provider:
+
+```env
 AI_PROVIDER=local
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
+```
+
+Gemini mode:
+
+```env
+AI_PROVIDER=gemini
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
-Notes:
+OpenAI mode:
 
-- `NEXT_PUBLIC_FIREBASE_*` values are Firebase web app config values. They are expected to be available to the browser.
-- `FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY` come from a Firebase service account and must stay private.
-- `OPENAI_API_KEY` must stay private.
-- `GEMINI_API_KEY` must stay private.
-- For local testing with no paid API usage, use `AI_PROVIDER=local`.
+```env
+AI_PROVIDER=openai
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Never expose `FIREBASE_PRIVATE_KEY`, `GEMINI_API_KEY`, or `OPENAI_API_KEY` in frontend code.
 
 ## Firebase Setup
 
-1. Open the Firebase Console.
-2. Create or select your Firebase project.
-3. Go to Project settings.
-4. Under General, create or select a Web App.
-5. Copy the Firebase web config into the `NEXT_PUBLIC_FIREBASE_*` variables.
-6. Go to Authentication.
-7. Enable Email/Password.
-8. Optional: enable Google sign-in.
-9. If using Google sign-in on Vercel, add your Vercel production domain to Authentication -> Settings -> Authorized domains.
-10. Go to Firestore Database.
-11. Create a Firestore database.
-12. Go to Project settings -> Service accounts.
-13. Generate a new private key.
-14. Copy `project_id`, `client_email`, and `private_key` into the server variables:
+1. Create/select a Firebase project.
+2. Enable Authentication.
+3. Enable Email/Password.
+4. Optional: enable Google sign-in.
+5. Add your Vercel domain in Authentication -> Settings -> Authorized domains.
+6. Create a Firestore database.
+7. Generate a service account key from Project settings -> Service accounts.
+8. Copy `project_id`, `client_email`, and `private_key` to Vercel.
 
-```env
-FIREBASE_PROJECT_ID=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_PRIVATE_KEY=
-```
+Use this private key format in Vercel:
 
-For Vercel, paste the private key exactly, including newline escapes if Vercel stores it as one line:
-
-```env
+```text
 -----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
 ```
 
-## Local Development
+## Vercel Setup
 
-Install dependencies:
+Use these project settings:
+
+```text
+Framework Preset: Next.js
+Build Command: npm run build
+Output Directory: empty
+Install Command: npm install
+Root Directory: ./
+```
+
+After changing environment variables, redeploy without build cache.
+
+## Local Development
 
 ```bash
 npm install
-```
-
-Run the app:
-
-```bash
 npm run dev
 ```
 
@@ -183,199 +143,55 @@ Open:
 http://localhost:3000
 ```
 
-Useful checks:
+Checks:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## Vercel Deployment
+## Demo Flow
 
-1. Push the repository to GitHub.
-2. Import the repository in Vercel.
-3. Add all required environment variables in Vercel Project Settings -> Environment Variables.
-4. For free testing, set:
+Use this under 90 seconds:
 
-```env
-AI_PROVIDER=local
+1. Sign in.
+2. Create Agent.
+3. Choose SaaS Customer Support Agent.
+4. Generate agent.
+5. Run this test task:
+
+```text
+A user says they were charged twice and wants a refund. Draft a support response and mention what information is needed.
 ```
 
-5. For OpenAI mode, set:
+6. Evaluate Response.
+7. Preview Improved Prompt.
+8. Apply Improvement.
+9. Generate deployment key.
 
-```env
-AI_PROVIDER=openai
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4o-mini
-```
+## Main Routes
 
-6. For Gemini free mode, set:
-
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-3.1-flash-lite
-```
-
-7. Redeploy after changing environment variables.
-
-If Firebase Google login says `auth/unauthorized-domain`, add your deployed Vercel domain in Firebase Authentication -> Settings -> Authorized domains.
-
-## How To Use AgentForge
-
-1. Sign up or sign in.
-2. Open Create Agent.
-3. Pick a starter template or describe the agent you want.
-4. Generate the agent.
-5. Open the saved agent detail page.
-6. Review the generated system prompt.
-7. Edit the prompt in Prompt editor.
-8. Use AgentForge Lens to analyze the current prompt.
-9. Click Optimize Prompt to rewrite the current editor prompt.
-10. Save the current or optimized prompt as a version.
-11. Run a single task against the agent.
-12. Evaluate the run with the scorecard.
-13. Use batch testing or benchmark suites to test repeated tasks.
-14. Return to Saved Agents to continue editing later.
-
-## Main Screens
-
-- `/` - Landing page.
-- `/signup` - Create account.
-- `/login` - Sign in.
-- `/dashboard` - Saved Agents.
-- `/agent/new` - Create a new agent.
-- `/agent/[id]` - Agent workspace, prompt editor, Lens, run form, batch testing, conversation, and evaluations.
-- `/invite/[token]` - Accept a workspace invite if team invites are enabled.
+- `/` - Home
+- `/agent/new` - Create Agent
+- `/agent/[id]` - Guided agent workbench
+- `/dashboard` - Saved Agents
+- `/login` - Sign in
+- `/signup` - Create account
+- `/marketplace` - Redirects to Saved Agents
+- `/leaderboard` - Redirects to Saved Agents
 
 ## API Routes
 
-- `/api/generate-agent` - Generate an agent config from a prompt or template.
-- `/api/run-agent` - Run an agent on one task.
-- `/api/evaluate-agent` - Evaluate one run.
-- `/api/improve-agent` - Generate an improved prompt from evaluation feedback.
-- `/api/dashboard` - Load saved agents for the current user/workspace.
-- `/api/agent/[id]` - Read or update one agent.
-- `/api/agent/[id]/lens` - Analyze, optimize, version, compare, and run eval packs.
-- `/api/batch-run` - Run multiple test tasks.
-- `/api/benchmarks` - Load benchmark suites.
-- `/api/conversation` - Conversation testing.
-- `/api/knowledge` - Manage knowledge snippets.
-- `/api/tools` - Manage tool descriptions.
-- `/api/export-runs` - Export run/evaluation data.
-- `/api/team` - Create or manage team invites.
-- `/api/team/accept` - Accept a team invite.
+- `/api/dashboard`
+- `/api/generate-agent`
+- `/api/agent/[id]`
+- `/api/agent/[id]/deployment`
+- `/api/run-agent`
+- `/api/evaluate-agent`
+- `/api/improve-agent`
+- `/api/export-runs`
+- `/api/evaluation/[id]`
+- `/api/team`
+- `/api/team/accept`
 
-## Data Model
-
-The app stores data in Cloud Firestore through a lightweight server-side Firestore adapter.
-
-Main collections:
-
-- `agents`
-- `agent_runs`
-- `evaluations`
-- `agent_versions`
-- `knowledge_sources`
-- `tool_integrations`
-- `workspace_members`
-- `workspace_invites`
-
-## Folder Structure
-
-```text
-agentforge/
-├── app/
-│   ├── agent/
-│   │   ├── [id]/page.tsx
-│   │   └── new/page.tsx
-│   ├── api/
-│   │   ├── agent/[id]/route.ts
-│   │   ├── agent/[id]/lens/route.ts
-│   │   ├── batch-run/route.ts
-│   │   ├── benchmarks/route.ts
-│   │   ├── conversation/route.ts
-│   │   ├── dashboard/route.ts
-│   │   ├── evaluate-agent/route.ts
-│   │   ├── evaluation/[id]/route.ts
-│   │   ├── export-runs/route.ts
-│   │   ├── generate-agent/route.ts
-│   │   ├── improve-agent/route.ts
-│   │   ├── knowledge/route.ts
-│   │   ├── run-agent/route.ts
-│   │   ├── team/route.ts
-│   │   ├── team/accept/route.ts
-│   │   └── tools/route.ts
-│   ├── dashboard/page.tsx
-│   ├── invite/[token]/page.tsx
-│   ├── login/page.tsx
-│   ├── signup/page.tsx
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   ├── AgentCard.tsx
-│   ├── AgentDetailClient.tsx
-│   ├── AgentEditor.tsx
-│   ├── AgentLensPanel.tsx
-│   ├── AgentWorkspace.tsx
-│   ├── AuthForm.tsx
-│   ├── AuthGate.tsx
-│   ├── BatchTestPanel.tsx
-│   ├── ConversationPanel.tsx
-│   ├── CreateAgentForm.tsx
-│   ├── DashboardClient.tsx
-│   ├── EvalDashboard.tsx
-│   ├── InviteAcceptClient.tsx
-│   ├── KnowledgePanel.tsx
-│   ├── LoadStatePanel.tsx
-│   ├── Navbar.tsx
-│   ├── RunAgentForm.tsx
-│   ├── ScoreCard.tsx
-│   ├── TeamPanel.tsx
-│   └── ToolIntegrationsPanel.tsx
-├── lib/
-│   ├── agent-context.ts
-│   ├── ai-json.ts
-│   ├── auth-client.ts
-│   ├── auth.ts
-│   ├── benchmarks.ts
-│   ├── client-api.ts
-│   ├── currency.ts
-│   ├── firebase-client.ts
-│   ├── firebase.ts
-│   ├── free-ai.ts
-│   ├── model-providers.ts
-│   ├── prompt-lens.ts
-│   ├── rubrics.ts
-│   ├── secrets.ts
-│   ├── templates.ts
-│   ├── types.ts
-│   └── workspace.ts
-├── .env.local.example
-├── package.json
-└── README.md
-```
-
-## Security Notes
-
-- Never commit `.env.local`.
-- Never expose `OPENAI_API_KEY`.
-- Never expose `GEMINI_API_KEY`.
-- Never expose `FIREBASE_PRIVATE_KEY`.
-- Firebase browser config keys that start with `NEXT_PUBLIC_FIREBASE_` are not server secrets, but Firebase security still depends on Authentication and Firestore rules/server-side access checks.
-- After changing Vercel environment variables, redeploy the project.
-
-## Development Status
-
-This build is optimized for a focused AgentForge prototype:
-
-- Private saved agents.
-- Prompt editing and optimization.
-- Test runs and evaluations.
-- Cost/token estimates.
-- Local free testing mode.
-- Optional Gemini free-tier mode.
-- Optional OpenAI-powered mode.
-
-Marketplace, leaderboard, public profiles, and public publishing are intentionally out of scope for this version.
+All API routes return JSON errors for missing auth, invalid input, missing environment configuration, and server failures.

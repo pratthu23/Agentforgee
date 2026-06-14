@@ -10,7 +10,7 @@ export default function DashboardPage() {
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Saved Agents</h1>
-          <p className="mt-2 text-forge-muted">Open, edit, test, and optimize the agents you have saved.</p>
+          <p className="mt-2 text-forge-muted">Open, edit, test, evaluate, and improve the agents you have saved.</p>
         </div>
         <Link
           href="/agent/new"

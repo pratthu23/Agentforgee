@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AgentForge',
-  description: 'Generate, run, and evaluate domain-specific AI agents.'
+  title: 'AgentForge - Build, Test, and Improve AI Agents.',
+  description: 'Create domain AI agents, run real tasks, evaluate responses, and improve prompts with measurable scores.'
 }
 
 export default function RootLayout({

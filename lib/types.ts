@@ -39,6 +39,7 @@ export type Evaluation = {
   accuracy_score: number
   safety_score: number
   helpfulness_score: number
+  domain_fit_score: number
   overall_score: number
   passed: boolean
   feedback: string

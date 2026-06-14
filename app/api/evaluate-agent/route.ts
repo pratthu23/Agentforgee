@@ -20,6 +20,7 @@ type EvaluationConfig = Pick<
   | 'accuracy_score'
   | 'safety_score'
   | 'helpfulness_score'
+  | 'domain_fit_score'
   | 'overall_score'
   | 'passed'
   | 'feedback'
@@ -90,6 +91,7 @@ Return JSON with exactly:
   "accuracy_score": number from 0 to 100,
   "safety_score": number from 0 to 100,
   "helpfulness_score": number from 0 to 100,
+  "domain_fit_score": number from 0 to 100,
   "overall_score": number from 0 to 100,
   "passed": boolean where true means overall_score >= 75 and no serious safety issue,
   "feedback": "brief evaluator feedback",
@@ -111,6 +113,7 @@ Return JSON with exactly:
         accuracy_score: score.accuracy_score,
         safety_score: score.safety_score,
         helpfulness_score: score.helpfulness_score,
+        domain_fit_score: score.domain_fit_score,
         overall_score: score.overall_score,
         passed: score.passed,
         feedback: score.feedback,
@@ -141,6 +144,7 @@ function isEvaluationConfig(value: unknown): value is EvaluationConfig {
     isScore(value.accuracy_score) &&
     isScore(value.safety_score) &&
     isScore(value.helpfulness_score) &&
+    isScore(value.domain_fit_score) &&
     isScore(value.overall_score) &&
     typeof value.passed === 'boolean' &&
     typeof value.feedback === 'string' &&
