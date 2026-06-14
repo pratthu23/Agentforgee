@@ -21,9 +21,9 @@ Create Agent -> Agent Instructions -> Run Test -> Evaluate Response -> Improve P
 - Evaluation section with overall, accuracy, safety, helpfulness, and domain fit scores.
 - Human-readable evaluation feedback, failure analysis, and suggested prompt improvement.
 - Improve Prompt section with preview, apply improvement, and before/after summary.
-- Export / Deploy Agent section with generated deployment API key and copy action.
+- Export / Deploy Agent section with CSV download, generated deployment API key, and copy action.
 - Recent Runs table with task, score, pass/fail, and date.
-- Server-side Local, Gemini, and OpenAI model providers.
+- Server-side Local and OpenAI model providers.
 
 Removed from this focused version:
 
@@ -48,7 +48,6 @@ Removed from this focused version:
 - Cloud Firestore
 - Firebase Admin SDK
 - Local free mode
-- Gemini API optional free-tier mode
 - OpenAI API optional paid mode
 - Vercel deployment
 
@@ -81,14 +80,6 @@ AI provider:
 AI_PROVIDER=local
 ```
 
-Gemini mode:
-
-```env
-AI_PROVIDER=gemini
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-3.1-flash-lite
-```
-
 OpenAI mode:
 
 ```env
@@ -97,7 +88,7 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-Never expose `FIREBASE_PRIVATE_KEY`, `GEMINI_API_KEY`, or `OPENAI_API_KEY` in frontend code.
+Never expose `FIREBASE_PRIVATE_KEY` or `OPENAI_API_KEY` in frontend code.
 
 ## Firebase Setup
 
@@ -167,7 +158,7 @@ A user says they were charged twice and wants a refund. Draft a support response
 6. Evaluate Response.
 7. Preview Improved Prompt.
 8. Apply Improvement.
-9. Generate deployment key.
+9. Download CSV report or generate deployment key.
 
 ## Main Routes
 

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { getAuthHeaders } from '@/lib/auth-client'
 import { formatEstimatedInrFromUsd } from '@/lib/currency'
+import { downloadRunsCsvReport } from '@/lib/csv-export-client'
 import { modelProviders } from '@/lib/model-providers'
 import type { Agent, AgentRun, ApiError, Evaluation, RunWithEvaluation } from '@/lib/types'
 
@@ -195,6 +196,22 @@ export function AgentWorkbench({ initialAgent, initialRuns }: { initialAgent: Ag
     setMessage('Deployment key copied.')
   }
 
+  async function downloadCsv() {
+    setBusy('export')
+    setError(null)
+    setMessage(null)
+
+    const result = await downloadRunsCsvReport()
+
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setMessage('CSV report downloaded.')
+    }
+
+    setBusy(null)
+  }
+
   return (
     <div className="space-y-6">
       <header className="rounded-xl border border-forge-border bg-forge-card p-5">
@@ -283,10 +300,13 @@ export function AgentWorkbench({ initialAgent, initialRuns }: { initialAgent: Ag
       </section>
 
       <section className="rounded-xl border border-forge-border bg-forge-card p-5">
-        <SectionTitle step="5" title="Export / Deploy Agent" copy="Generate a deployment key for API usage. Keep this key private." />
+        <SectionTitle step="5" title="Export / Deploy Agent" copy="Download run history as CSV or generate a deployment key for API usage." />
         <div className="mt-5 rounded-xl border border-forge-orange/30 bg-forge-orange/10 p-4 text-sm leading-6 text-orange-100">
           Deployment keys can run your agent through supported server routes. Treat them like passwords and regenerate the key if it is exposed.
         </div>
+        <button onClick={downloadCsv} disabled={busy === 'export'} className="mt-4 rounded-xl bg-forge-blue px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-blue-500 disabled:opacity-60">
+          {busy === 'export' ? 'Preparing CSV...' : 'Download CSV'}
+        </button>
         <div className="mt-4 flex flex-col gap-3 md:flex-row">
           <input readOnly value={deploymentKey || 'No deployment key generated yet'} className="min-w-0 flex-1 rounded-xl border border-forge-border bg-black/30 px-4 py-3 font-mono text-sm text-forge-muted" />
           <button onClick={generateDeploymentKey} disabled={busy === 'deploy'} className="rounded-xl bg-forge-purple px-5 py-3 font-semibold text-white transition-all duration-200 hover:bg-purple-500 disabled:opacity-60">{busy === 'deploy' ? 'Generating...' : deploymentKey ? 'Regenerate Key' : 'Generate Key'}</button>

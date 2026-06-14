@@ -24,14 +24,8 @@ export async function requestAiJson<T>(
 }
 
 async function requestOnce(system: string, user: string): Promise<string> {
-  const provider = (process.env.AI_PROVIDER || 'local').toLowerCase()
-
-  if (provider === 'gemini') {
-    return requestGeminiJson(system, user)
-  }
-
   if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OpenAI API key is not configured. Add OPENAI_API_KEY, set AI_PROVIDER=gemini, or set AI_PROVIDER=local.')
+    throw new Error('OpenAI API key is not configured. Add OPENAI_API_KEY or set AI_PROVIDER=local.')
   }
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -60,49 +54,6 @@ async function requestOnce(system: string, user: string): Promise<string> {
 
   if (!text) {
     throw new Error('OpenAI returned an empty response.')
-  }
-
-  return text
-}
-
-async function requestGeminiJson(system: string, user: string): Promise<string> {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error('Gemini API key is not configured. Add GEMINI_API_KEY or set AI_PROVIDER=local.')
-  }
-
-  const model = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite'
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': process.env.GEMINI_API_KEY
-    },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: system }]
-      },
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: user }]
-        }
-      ],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.2
-      }
-    })
-  })
-
-  if (!response.ok) {
-    throw new Error(`Gemini request failed with status ${response.status}.`)
-  }
-
-  const payload = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> }
-  const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('').trim()
-
-  if (!text) {
-    throw new Error('Gemini returned an empty response.')
   }
 
   return text

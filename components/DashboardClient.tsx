@@ -7,6 +7,7 @@ import { AgentCard } from '@/components/AgentCard'
 import { LoadStatePanel } from '@/components/LoadStatePanel'
 import { getAuthHeaders, getSessionOrRedirect } from '@/lib/auth-client'
 import { fetchJson } from '@/lib/client-api'
+import { downloadRunsCsvReport } from '@/lib/csv-export-client'
 import type { AgentWithStats, ApiError } from '@/lib/types'
 
 type SavedAgentsResponse = { agents: AgentWithStats[] } | ApiError
@@ -15,6 +16,7 @@ export function DashboardClient() {
   const router = useRouter()
   const [agents, setAgents] = useState<AgentWithStats[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const loadAgents = useCallback(async (showLoading = true) => {
@@ -52,6 +54,19 @@ export function DashboardClient() {
     return () => window.clearTimeout(timer)
   }, [loadAgents])
 
+  async function handleDownloadCsv() {
+    setExporting(true)
+    setError(null)
+
+    const result = await downloadRunsCsvReport()
+
+    if (result.error) {
+      setError(result.error)
+    }
+
+    setExporting(false)
+  }
+
   if (loading) {
     return <div className="rounded-xl border border-forge-border bg-forge-card p-6 text-forge-muted">Loading saved agents...</div>
   }
@@ -60,9 +75,20 @@ export function DashboardClient() {
     <>
       {error ? <div className="mb-6"><LoadStatePanel title="Failed to load saved agents" message={error} onRetry={() => void loadAgents()} /></div> : null}
       {agents.length > 0 ? (
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {agents.map((agent) => <AgentCard key={agent.id} agent={agent} />)}
-        </section>
+        <>
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={handleDownloadCsv}
+              disabled={exporting}
+              className="rounded-xl border border-forge-border px-4 py-3 text-sm font-semibold text-forge-text transition-all duration-200 hover:bg-white/5 disabled:opacity-60"
+            >
+              {exporting ? 'Preparing CSV...' : 'Download CSV'}
+            </button>
+          </div>
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {agents.map((agent) => <AgentCard key={agent.id} agent={agent} />)}
+          </section>
+        </>
       ) : (
         <section className="rounded-xl border border-dashed border-forge-border bg-forge-card p-10 text-center">
           <h2 className="text-xl font-bold text-white">No saved agents yet</h2>

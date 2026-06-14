@@ -1,4 +1,4 @@
-export type ModelProviderId = 'local' | 'openai' | 'gemini'
+export type ModelProviderId = 'local' | 'openai'
 
 export type ModelProviderOption = {
   id: ModelProviderId
@@ -11,7 +11,6 @@ export type ModelProviderOption = {
 
 export const modelProviders: ModelProviderOption[] = [
   { id: 'local', name: 'Local Free', model: 'local-demo-engine', costPer1kInput: 0, costPer1kOutput: 0, enabledByDefault: true },
-  { id: 'gemini', name: 'Gemini Free', model: process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite', costPer1kInput: 0, costPer1kOutput: 0, enabledByDefault: false },
   { id: 'openai', name: 'OpenAI', model: process.env.OPENAI_MODEL || 'gpt-4o-mini', costPer1kInput: 0.00015, costPer1kOutput: 0.0006, enabledByDefault: false }
 ]
 
@@ -42,9 +41,7 @@ export async function generateWithProvider({
     return withCost(output, provider, inputTokens)
   }
 
-  const output = provider.id === 'gemini'
-    ? await generateGemini(provider, system, prompt)
-    : await generateOpenAi(provider, system, prompt)
+  const output = await generateOpenAi(provider, system, prompt)
   return withCost(output, provider, inputTokens)
 }
 
@@ -102,43 +99,3 @@ async function generateOpenAi(provider: ModelProviderOption, system: string, pro
   return text
 }
 
-async function generateGemini(provider: ModelProviderOption, system: string, prompt: string): Promise<string> {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error('Gemini API key is not configured. Add GEMINI_API_KEY, or use Local Free.')
-  }
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:generateContent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': process.env.GEMINI_API_KEY
-    },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: system }]
-      },
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: prompt }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.5
-      }
-    })
-  })
-
-  if (!response.ok) {
-    throw new Error(`${provider.name} request failed with status ${response.status}.`)
-  }
-
-  const payload = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> }
-  const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('').trim()
-
-  if (!text) {
-    throw new Error(`${provider.name} returned an empty response.`)
-  }
-
-  return text
-}

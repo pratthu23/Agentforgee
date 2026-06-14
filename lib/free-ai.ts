@@ -15,7 +15,7 @@ export type LocalEvaluation = {
 }
 
 export function isLocalAiProvider(): boolean {
-  return (process.env.AI_PROVIDER || 'local').toLowerCase() === 'local'
+  return (process.env.AI_PROVIDER || 'local').toLowerCase() !== 'openai'
 }
 
 export function generateLocalAgentConfig(prompt: string): AgentConfig {
